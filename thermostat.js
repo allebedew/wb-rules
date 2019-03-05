@@ -1,4 +1,4 @@
-
+/*
 // Device
 
 defineVirtualDevice("thermostat", {
@@ -65,3 +65,4 @@ defineRule("update_state", {
         }
     }
 });
+*/

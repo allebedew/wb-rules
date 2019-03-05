@@ -5,7 +5,7 @@
 // TODO: 3. Turn valves onece per month
 
 // Device
-
+/*
 defineVirtualDevice("water_control", {
 	title: "Water Control",
 	cells: {
@@ -93,3 +93,4 @@ defineRule("reset_flood_alert", {
         updateValves();
     }
 });
+*/

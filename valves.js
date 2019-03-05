@@ -1,12 +1,11 @@
 
 // Controls water valve
-// TODO: Stores last state in memory
 // Ignores state setter in already in target state
 
 function makeValve(name, open_relay, close_relay) {
   	var lowcase_name = name.toLowerCase();
     var device_name = "valve_" + lowcase_name;
-  	var action_duration = 3000;
+  	var action_duration = 25000;
     var timer;
   
   	log.debug("Creating valve {}", name);
@@ -77,7 +76,6 @@ function makeValve(name, open_relay, close_relay) {
                     dev[device_name + "/Closed"] = true;
                 }
 
-                beep_onece();
               	log.debug("Valve {} finished", lowcase_name);
 
             }, action_duration);
@@ -85,8 +83,6 @@ function makeValve(name, open_relay, close_relay) {
     });
 }
 
-log("valves.js loaded");
-
-makeValve("Cold", "wb-mr6c_0x44/K1", "wb-mr6c_0x44/K2");
-makeValve("Hot", "wb-mr6c_0x44/K3", "wb-mr6c_0x44/K4");
-makeValve("Boiler", "wb-mr6c_0x44/K5", "wb-mr6c_0x44/K6");
+makeValve("Cold", "fl1_rel3/K3", "fl1_rel3/K4");
+makeValve("Hot", "fl1_rel3/K11", "fl1_rel3/K12");
+makeValve("Boiler", "fl1_rel3/K1", "fl1_rel3/K2");
