@@ -1,11 +1,118 @@
 
-var last_motion = {};
+// Setup
 
-function setupMotionDetector(name, sensor, timeout, onEnter, onEnterNight, onLeave) {
-  
-  
-  
-  
+var detectors = {};
+
+detectors["hall"] = {
+  sensor: "EXT1_DR3",
+  timeout: 3,
+  on_enter: function() { 
+    log("HALL -> ENTER {}", new Date());
+  },
+  on_leave: function() {
+    log("HALL -> LEAVE {}", new Date());    
+  }
+};
+
+detectors["shower"] = {
+  sensor: "EXT1_DR1",
+  timeout: 3,
+  on_enter: function() { 
+    log("SHOWER -> ENTER {}", new Date());
+  },
+  on_leave: function() {
+    log("SHOWER -> LEAVE {}", new Date());    
+  }
+};
+
+detectors["living"] = {
+  sensor: "EXT1_DR4",
+  timeout: 3,
+  on_enter: function() { 
+    log("LIVING -> ENTER {}", new Date());
+  },
+  on_leave: function() {
+    log("LIVING -> LEAVE {}", new Date());    
+  }
+};
+
+log(JSON.stringify(detectors));
+
+// Rules
+
+var last_motion = {}; // key = cell
+
+defineRule("motion-detection-trigger", {
+  whenChanged: "wb-gpio/+",
+  then: function(value, device, cell) {
+    if (value == 0) { return; }
+    
+    log("{} triggered");
+    
+	for (var name in detectors) {
+      var detector = detectors[name];
+      
+      if (cell == detecor.sensor) {
+        
+        if (!(cell in last_motion)) {
+          detector.on_enter();
+        }
+        
+        var date = new Date();
+        last_motion[cell] = date.getTime();
+      }
+    }
+  }
+});
+
+defineRule("motion-detection-cron", {
+  when: cron("@every 1m"),
+  then: function(val) {
+    
+    var date = new Date();
+    var ts = date.getTime();
+    
+    log("1 MIN CRON {}", ts);
+    
+    for (var name in detectors) {
+      var detector = detectors[name];
+      if (ts - last_motion[detector.sensor] > detector.timeout * 60 * 1000) {
+        detector.on_leave();
+        delete last_motion[detector.sensor];
+      }
+    }
+    
+    // Lagacy
+    
+    var now = new Date();
+    if (now - shower_last_motion > shower_timeout) {
+      if (dev[shower_dimmer] > 0) {
+        dev[shower_dimmer] = 0;
+      } 
+    } 
+    if (now - bathroom_last_motion > bathroom_timeout) {
+      if (dev[bathroom_dimmer] > 0) {
+        dev[bathroom_dimmer] = 0;
+      } 
+    } 
+    if (now - boiler_last_motion > boiler_timeout) {
+      if (dev[boiler_relay] == 1) {
+        dev[boiler_relay] = 0;
+      } 
+    }
+  }
+});
+
+function isNight() {
+  var now = new Date();
+  var evening = new Date(now);
+  evening.setHours(23);
+  evening.setMinutes(0);
+  var sunrise = new Date(now);
+  sunrise.setHours(6);
+  sunrise.setMinutes(0);
+
+  return (now < sunrise || now > evening);
 }
 
 // Hall
@@ -105,42 +212,3 @@ defineRule("motion-on-bathroom", {
     }
   }
 });
-
-// Off Rules
-
-defineRule("motion-check-off", {
-  when: cron("@every 1m"),
-  then: function(val) {
-    var now = new Date();
-    
-    if (now - shower_last_motion > shower_timeout) {
-      if (dev[shower_dimmer] > 0) {
-        dev[shower_dimmer] = 0;
-      } 
-    } 
-    
-    if (now - bathroom_last_motion > bathroom_timeout) {
-      if (dev[bathroom_dimmer] > 0) {
-        dev[bathroom_dimmer] = 0;
-      } 
-    } 
-
-    if (now - boiler_last_motion > boiler_timeout) {
-      if (dev[boiler_relay] == 1) {
-        dev[boiler_relay] = 0;
-      } 
-    }
-  }
-});
-
-function isNight() {
-  var now = new Date();
-  var evening = new Date(now);
-  evening.setHours(23);
-  evening.setMinutes(0);
-  var sunrise = new Date(now);
-  sunrise.setHours(6);
-  sunrise.setMinutes(0);
-
-  return (now < sunrise || now > evening);
-}
