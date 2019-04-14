@@ -32,7 +32,7 @@ function setupDimmer(name, mqtt_id) {
 
       var date = new Date();
       if (date.getTime() < ignore_bridge_until[name]) {
-        log("Bridge changed, not updating channels");
+        debug("Bridge changed, not updating channels");
         return;
       }
       
@@ -54,7 +54,7 @@ function setupDimmer(name, mqtt_id) {
       
       var date = new Date();
       if (date.getTime() < ignore_chan_until[name]) {
-        log("Channel changed, not updating bridge");
+        debug("Channel changed, not updating bridge");
         return;
       }
       

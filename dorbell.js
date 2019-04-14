@@ -2,11 +2,10 @@
 var last_time;
 
 defineRule("dorbell", {
-  whenChanged: ["wb-gpio/EXT1_DR14", "utils/Dorbell"],
+  whenChanged: ["wb-gpio/EXT1_DR14"],
   then: function(value) {
-    if (value == 0) {
-      return;
-    }
+    if (value == 0) return;
+    
     log("Dorbell button pressed");
       
     var now = new Date();  

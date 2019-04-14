@@ -38,24 +38,24 @@ var dimmers = [
 function allLightOff() {
   log.info("Switching all light off");
   
-  var wasOn = false;
+  var on = 0;
   
   relays.forEach(function(relay) {
     if (dev[relay] != 0) {
       dev[relay] = 0;
-      wasOn = true;
+	  on++;
   	}
   });
   
   dimmers.forEach(function(dimmer) {
     if (dev[dimmer] > 0) {
 	  dev[dimmer] = 0;
-      wasOn = true;
+	  on++;
     }
   });
   
-  if (wasOn) {
-    dev["beeper/Beep"] = 1;
+  if (on > 0) {
+    dev["beeper/Beep"] = String(on);
   }
 }
 
@@ -81,6 +81,7 @@ defineRule("all_off_button", {
     if (val == 1) {
       timer = setTimeout(function() {
         allLightOff();
+        timer = null;
       }, 2000);  
     } else {
       if (timer) {
@@ -96,16 +97,10 @@ defineRule("all_off", {
 });
 
 // Lighht Sync
-/*
+
 defineRule("kitchen-light-sync", {
-  whenChanged: "dimmer-bridge/Kitchen",
+  whenChanged: "fl1_ktch_rel/Relay 1",
   then: function(val) {
-    log("Kitchen changed {}", val);
-    if (val > 0) {
-      dev["fl1_ktch_rel/Relay 2"] = 1;
-    } else {
-      dev["fl1_ktch_rel/Relay 2"] = 0;
-    }
+	dev["fl1_ktch_rel/Relay 2"] = val;
   }
 });
-*/
