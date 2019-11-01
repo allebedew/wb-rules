@@ -55,7 +55,7 @@ function allLightOff() {
   });
   
   if (on > 0) {
-    dev["beeper/Beep"] = String(on);
+    publish("/devices/beeper/controls/Beep/on", String(on));
   }
 }
 

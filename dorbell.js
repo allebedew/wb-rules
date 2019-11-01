@@ -2,7 +2,7 @@
 var last_time;
 
 defineRule("dorbell", {
-  whenChanged: ["wb-gpio/EXT1_DR14"],
+  whenChanged: ["wb-gpio/EXT1_DR6"],
   then: function(value) {
     if (value == 0) return;
     
@@ -16,7 +16,7 @@ defineRule("dorbell", {
       dev["fl1_rel3/K16"] = 1;
       setTimeout(function() {
         dev["fl1_rel3/K16"] = 0;
-      }, 400);
+      }, 1000);
 
       runShellCommand("/usr/local/bin/telegram-send 'Dorbell!'");
     }
